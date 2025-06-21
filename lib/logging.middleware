@@ -1,0 +1,72 @@
+import { Prisma } from '@prisma/client'
+
+export const loggingMiddleware: Prisma.Middleware = async (params, next) => {
+  const result = await next(params)
+
+  const loggableActions = ['create', 'update', 'delete']
+
+  if (
+    loggableActions.includes(params.action) &&
+    params.model &&
+    params.args?.data &&
+    params.args?.context?.userId
+  ) {
+    const { userId } = params.args.context
+
+    const metadata: Record<string, any> = {
+      action: params.action.toUpperCase(),
+      data: params.args.data,
+    }
+
+    try {
+      await params.args.context.prisma.activityLog.create({
+        data: {
+          userId,
+          action: metadata.action,
+          targetType: params.model,
+          targetId: result?.id ?? 'UNKNOWN',
+          metadata,
+        },
+      })
+    } catch (e) {
+      console.error('Logging failed:', e)
+    }
+  }
+
+  return result
+}
+
+
+import { PrismaClient } from '@prisma/client'
+import { loggingMiddleware } from './prismaLoggingMiddleware'
+
+const prisma = new PrismaClient()
+
+// Pasang middleware
+prisma.$use(loggingMiddleware)
+
+export default prisma
+
+
+4. Contoh Pemakaian di API Route
+Di file misalnya /pages/api/submission/update.ts
+import prisma from '@/lib/prisma'
+import { getSession } from 'next-auth/react'
+
+export default async function handler(req, res) {
+  const session = await getSession({ req })
+  if (!session) return res.status(401).end()
+
+  const { id, name } = req.body
+
+  const updated = await prisma.submission.update({
+    where: { id },
+    data: { name },
+    context: {
+      userId: session.user.id, // penting untuk logging
+      prisma,
+    },
+  })
+
+  res.json(updated)
+}

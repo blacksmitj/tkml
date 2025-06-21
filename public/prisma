@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SELECTOR
+  USER
+}
+
+model User {
+  id        String         @id @default(uuid())
+  email     String         @unique
+  password  String
+  name      String
+  role      UserRole       @default(USER)
+  selector  SelectionTeam?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model SelectionTeam {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  applicants Applicant[]
+  userId     String?     @unique
+  user       User?       @relation(fields: [userId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([name])
+}
+
+model TKMPGroup {
+  id         String      @id @default(uuid())
+  tkmpId     String      @unique
+  name       String
+  data       String
+  history    String
+  applicants Applicant[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([tkmpId])
+  @@index([name])
+}
+
+model Applicant {
+  id                    String @id @default(uuid())
+  tkmId                 String
+  fullName              String
+  nationalId            String
+  familyCardNumber      String
+  age                   Int
+  currentActivity       String
+  domicileAddress       String
+  domicileProvince      String
+  domicileCity          String
+  domicileDistrict      String
+  domicileVillage       String
+  phoneNumber           String
+  whatsappNumber        String
+  whatsappStatus        String
+  registrationDocStatus String
+  ktpLink               String
+  photoLink             String
+  selectionTeamId       String
+  groupId               String
+
+  selectionTeam SelectionTeam      @relation(fields: [selectionTeamId], references: [id])
+  group         TKMPGroup          @relation(fields: [groupId], references: [id])
+  relatives     Relative[]
+  document      ApplicantDocument?
+  business      Business?
+  worker        Worker?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([fullName])
+  @@index([domicileCity])
+  @@index([tkmId])
+  @@index([selectionTeamId])
+}
+
+model Relative {
+  id          String    @id @default(uuid())
+  name        String
+  number      String
+  status      String
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  applicantId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ApplicantDocument {
+  id                   String    @id @default(uuid())
+  commitmentLetterLink String
+  proposalLink         String
+  videoLink            String
+  document1Type        String
+  document1Link        String
+  document2Type        String
+  document2Link        String
+  previousAidProof     String
+  previousGroupProof   String
+  applicant            Applicant @relation(fields: [applicantId], references: [id])
+  applicantId          String    @unique
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model Business {
+  id          String    @id @default(uuid())
+  name        String
+  sector      String
+  type        String
+  description String    @db.Text
+  mainProduct String
+  address     String
+  province    String
+  city        String
+  district    String
+  village     String
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  applicantId String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name])
+  @@index([sector])
+  @@index([city])
+}
+
+model Worker {
+  id          String    @id @default(uuid())
+  name        String
+  nationalId  String
+  ktpLink     String
+  description String    @db.Text
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+  applicantId String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  REVIEWER
+  MENTOR
+  VIEWER
+}
+
+enum ApplicantRole {
+  LEADER
+  MEMBER
+  INDIVIDUAL
+}
+
+enum AssessmentRole {
+  MENTOR
+  REVIEWER
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  name     String
+  role     UserRole
+
+  idNumber   String?
+  photo      String?
+  currentJob String?
+
+  address    String?
+  province   String?
+  city       String?
+  district   String?
+  village    String?
+  postalCode String?
+
+  university String?
+  major      String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  mentoredSubmissions Submission[] @relation("MentorSubmission")
+  reviewedSubmissions Submission[] @relation("ReviewerSubmission")
+
+  assesments   Assessment[]
+  activityLogs ActivityLog[]
+
+  @@index([role])
+}
+
+model Program {
+  id          String  @id @default(uuid())
+  name        String // e.g. "TKM Pemula", "TKML"
+  year        Int // e.g. 2024, 2025
+  description String? // optional, untuk catatan
+  isActive    Boolean @default(true)
+
+  submissions Submission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, year]) // mencegah duplikat nama & tahun
+}
+
+model Submission {
+  id          String       @id @default(uuid())
+  business    Business?
+  documents   Document[]
+  assessments Assessment[]
+
+  applicantId String    @unique
+  applicant   Applicant @relation(fields: [applicantId], references: [id])
+
+  programId String
+  program   Program @relation(fields: [programId], references: [id])
+
+  mentorId String
+  mentor   User   @relation("MentorSubmission", fields: [mentorId], references: [id])
+
+  reviewerId String
+  reviewer   User   @relation("ReviewerSubmission", fields: [reviewerId], references: [id])
+
+  groupId String?
+  group   TKMPGroup? @relation(fields: [groupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([applicantId])
+  @@index([programId])
+  @@index([mentorId])
+  @@index([reviewerId])
+}
+
+model TKMPGroup {
+  id          String       @id @default(uuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  submissions Submission[]
+
+  @@index([name])
+}
+
+model Applicant {
+  id               String        @id @default(uuid())
+  idTkm            String
+  name             String
+  email            String
+  gender           String
+  currentJob       String?
+  lastEducation    String?
+  birthDate        DateTime?
+  role             ApplicantRole @default(INDIVIDUAL)
+  ktpNumber        String
+  familyCardNumber String?
+  submitDate       DateTime?
+
+  ktpAddress    String?
+  ktpProvince   String?
+  ktpCity       String?
+  ktpDistrict   String?
+  ktpVillage    String?
+  ktpPostalCode String?
+
+  domicileAddress    String?
+  domicileProvince   String?
+  domicileCity       String?
+  domicileDistrict   String?
+  domicileVillage    String?
+  domicilePostalCode String?
+  domicileLinkMap    String?
+
+  relative1Name         String?
+  relative1Phone        String?
+  relative1Relationship String?
+
+  relative2Name         String?
+  relative2Phone        String?
+  relative2Relationship String?
+
+  isDisability   Boolean?
+  disabilityType String?
+  disabilityLink String?
+
+  socialMediaPlatform String?
+  socialMediaAccount  String?
+
+  personalPhone    String?
+  personalWhatsapp String?
+
+  ktpFile        String?
+  familyCardFile String?
+  selfieFile     String?
+
+  submissions Submission?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([ktpNumber])
+  @@index([email])
+  @@index([name])
+}
+
+model Business {
+  id           String     @id @default(uuid())
+  submissionId String     @unique
+  submission   Submission @relation(fields: [submissionId], references: [id])
+
+  name            String
+  nib             String?
+  sector          String?
+  businessType    String?
+  description     String?
+  mainProduct     String?
+  buildingType    String?
+  ownershipStatus String?
+
+  marketingChannel String?
+  marketingArea    String?
+  marketingCountry String?
+
+  partnerDescription String?
+  partnerCount       Int?
+
+  omzetPerMonth     Int?
+  profitPerMonth    Int?
+  unitsSoldPerMonth Int?
+
+  address    String?
+  province   String?
+  city       String?
+  district   String?
+  village    String?
+  postalCode String?
+  linkMap    String?
+
+  fotoFile  String?
+  videoFile String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([name])
+}
+
+model Document {
+  id           String     @id @default(uuid())
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id])
+
+  name    String // Example: "Surat Permohonan Bantuan"
+  fileUrl String
+
+  number   String?
+  date     DateTime?
+  signer   String?
+  location String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Worker {
+  id      String  @id @default(uuid())
+  name    String
+  nik     String
+  ktpUrl  String
+  status  String?
+  jobType String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nik])
+}
+
+model Assessment {
+  id           String         @id @default(uuid())
+  submissionId String
+  userId       String
+  name         String
+  role         AssessmentRole
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  answers AssessmentAnswer[]
+
+  submission Submission @relation(fields: [submissionId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+}
+
+model AssessmentAnswer {
+  id           String  @id @default(uuid())
+  assessmentId String
+  questionId   String
+  value        String
+  comment      String?
+  fileUrl      String? // ✅ Tambahan: URL bukti jika diperlukan
+
+  createdAt DateTime @default(now())
+
+  assessment Assessment         @relation(fields: [assessmentId], references: [id])
+  question   AssessmentQuestion @relation(fields: [questionId], references: [id])
+}
+
+model AssessmentQuestion {
+  id           String         @id @default(uuid())
+  text         String
+  role         AssessmentRole
+  order        Int
+  isActive     Boolean        @default(true)
+  requiresFile Boolean        @default(false) // ✅ Tambahan: apakah harus upload file?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  answers AssessmentAnswer[]
+}
+
+model ActivityLog {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  action     String // Example: "UPLOAD_DOCUMENT", "VERIFY_DOCUMENT"
+  targetId   String?
+  targetType String // e.g. "document", "submission"
+  detail     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([targetId])
+  @@index([action])
+}

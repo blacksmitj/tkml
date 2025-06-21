@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      new URL("https://bizhub-storage.oss-ap-southeast-5.aliyuncs.com/**"),
+    ],
+  },
 };
 
 export default nextConfig;
