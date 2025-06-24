@@ -1,16 +1,6 @@
 import { Header } from "@/components/admin/header";
 import { TodayItem } from "@/components/admin/today-item";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import {
-  BadgeX,
-  CheckCheck,
-  OctagonAlert,
-  PersonStanding,
-  PersonStandingIcon,
-  UploadCloudIcon,
-  UserRound,
-} from "lucide-react";
+import { BadgeX, CheckCheck, OctagonAlert, UserRound } from "lucide-react";
 
 const AdminPage = () => {
   return (

@@ -76,6 +76,7 @@ model Program {
 model Submission {
   id          String       @id @default(uuid())
   business    Business?
+  workers     Worker[]
   documents   Document[]
   assessments Assessment[]
 
@@ -85,11 +86,11 @@ model Submission {
   programId String
   program   Program @relation(fields: [programId], references: [id])
 
-  mentorId String
-  mentor   User   @relation("MentorSubmission", fields: [mentorId], references: [id])
+  mentorId String?
+  mentor   User?   @relation("MentorSubmission", fields: [mentorId], references: [id])
 
-  reviewerId String
-  reviewer   User   @relation("ReviewerSubmission", fields: [reviewerId], references: [id])
+  reviewerId String?
+  reviewer   User?   @relation("ReviewerSubmission", fields: [reviewerId], references: [id])
 
   groupId String?
   group   TKMPGroup? @relation(fields: [groupId], references: [id])
@@ -105,12 +106,10 @@ model Submission {
 
 model TKMPGroup {
   id          String       @id @default(uuid())
-  name        String
+  name        String       @unique
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   submissions Submission[]
-
-  @@index([name])
 }
 
 model Applicant {
@@ -118,7 +117,7 @@ model Applicant {
   idTkm            String
   name             String
   email            String
-  gender           String
+  gender           Boolean       @default(true)
   currentJob       String?
   lastEducation    String?
   birthDate        DateTime?
@@ -206,10 +205,6 @@ model Business {
   postalCode String?
   linkMap    String?
 
-  fotoFile  String?
-  videoFile String?
-
-  createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
   @@index([name])
@@ -223,10 +218,14 @@ model Document {
   name    String // Example: "Surat Permohonan Bantuan"
   fileUrl String
 
-  number   String?
-  date     DateTime?
-  signer   String?
-  location String?
+  type         String?
+  number       String?
+  description  String?
+  date         DateTime?
+  signer       String?
+  location     String?
+  comment      String?
+  varification Boolean?  @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
@@ -242,6 +241,9 @@ model Worker {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  submissionId String
+  Submission   Submission @relation(fields: [submissionId], references: [id])
 
   @@index([nik])
 }
@@ -262,32 +264,45 @@ model Assessment {
   user       User       @relation(fields: [userId], references: [id])
 }
 
-model AssessmentAnswer {
-  id           String  @id @default(uuid())
-  assessmentId String
-  questionId   String
-  value        String
-  comment      String?
-  fileUrl      String? // ✅ Tambahan: URL bukti jika diperlukan
-
-  createdAt DateTime @default(now())
-
-  assessment Assessment         @relation(fields: [assessmentId], references: [id])
-  question   AssessmentQuestion @relation(fields: [questionId], references: [id])
-}
-
 model AssessmentQuestion {
   id           String         @id @default(uuid())
   text         String
   role         AssessmentRole
   order        Int
   isActive     Boolean        @default(true)
-  requiresFile Boolean        @default(false) // ✅ Tambahan: apakah harus upload file?
+  requiresFile Boolean        @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
+  options AssessmentQuestionOption[] // 🔹 Relasi ke opsi jawaban
   answers AssessmentAnswer[]
+}
+
+model AssessmentQuestionOption {
+  id         String @id @default(uuid())
+  questionId String
+  label      String // contoh: "Sangat Baik", "Cukup", "Kurang"
+  score      Int // skor nilai (misalnya: 5, 3, 1)
+
+  question         AssessmentQuestion @relation(fields: [questionId], references: [id])
+  AssessmentAnswer AssessmentAnswer[]
+}
+
+model AssessmentAnswer {
+  id           String  @id @default(uuid())
+  assessmentId String
+  questionId   String
+  optionId     String? // ✅ Jawaban terpilih (bisa null untuk jawaban bebas)
+  value        String? // Untuk pertanyaan bebas, atau teks manual
+  comment      String?
+  fileUrl      String?
+
+  createdAt DateTime @default(now())
+
+  assessment Assessment                @relation(fields: [assessmentId], references: [id])
+  question   AssessmentQuestion        @relation(fields: [questionId], references: [id])
+  option     AssessmentQuestionOption? @relation(fields: [optionId], references: [id])
 }
 
 model ActivityLog {

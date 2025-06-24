@@ -1,16 +1,19 @@
 "use client";
 
+import { parse } from "path";
+import { FormControl } from "./form";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "./select";
 
 interface YearPickerProps {
   value: number;
-  onChange: () => void;
+  onChange: (year: number) => void;
   disabled: boolean;
 }
 
@@ -21,19 +24,18 @@ export const YearPicker: React.FC<YearPickerProps> = ({
 }) => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
-  console.log({ value });
-  console.log({ years });
-  console.log({ onChange });
 
   return (
     <Select
       disabled={disabled}
-      value={value.toString()}
-      onValueChange={onChange}
+      value={value !== undefined ? value.toString() : ""}
+      onValueChange={(val) => onChange(parseInt(val))}
     >
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Select a year" />
-      </SelectTrigger>
+      <FormControl>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select a year" />
+        </SelectTrigger>
+      </FormControl>
       <SelectContent>
         {years.map((year) => {
           return (

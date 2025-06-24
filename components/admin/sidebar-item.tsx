@@ -3,32 +3,96 @@
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronRight, LucideIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import { cn } from "@/lib/utils";
+import { useSidebarStore } from "@/store/sidebar";
+
+type SubmenuItem = {
+  label: string;
+  href: string;
+};
 
 type Props = {
   label: string;
   icon?: LucideIcon;
   href: string;
+  children?: SubmenuItem[];
+  collapsed?: (active: boolean) => void;
 };
 
-const SidebarItem = ({ label, icon: Icon, href }: Props) => {
+const SidebarItem = ({ label, icon: Icon, href, children = [] }: Props) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive =
+    pathname === href || children.some((c) => pathname === c.href);
+  const [open, setOpen] = useState(false);
+  const hasChildren = Array.isArray(children) && children.length > 0;
+
+  const { collapsed } = useSidebarStore();
+
+  if (hasChildren && !collapsed) {
+    return (
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <Button
+            variant={isActive ? "default" : "secondary"}
+            className="w-full justify-between h-[48px] px-3 cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              {Icon && <Icon className="w-4 h-4" />}
+              {!collapsed && <span>{label}</span>}
+            </span>
+            {open ? (
+              <ChevronDown className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="ml-6 animate-slide-down my-2">
+          <Button
+            variant="link"
+            className={cn("w-full justify-start text-sm px-3")}
+          >
+            <Link href={href}>All Programs</Link>
+          </Button>
+          {children.map((child) => {
+            const isChildActive = pathname === child.href;
+            return (
+              <Button
+                key={child.href}
+                variant={"link"}
+                className={cn(
+                  "w-full justify-start text-sm px-3",
+                  isChildActive ? "underline" : ""
+                )}
+              >
+                <Link href={child.href}>{child.label}</Link>
+              </Button>
+            );
+          })}
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  }
 
   return (
     <Button
       variant={isActive ? "default" : "secondary"}
-      className="justify-start h-[52px]"
+      className={cn(
+        "w-full h-[48px] px-3 cursor-pointer",
+        !collapsed ? "justify-start" : "justify-center items-center"
+      )}
       asChild
     >
-      <Link href={href}>
-        {Icon && (
-          <Icon
-            fill={isActive ? "currentColor" : "none"}
-            className="size-4 mr-1"
-          />
-        )}
-        {label}
+      <Link href={href!}>
+        {Icon && <Icon className="w-4 h-4 mr-2" />}
+        {!collapsed && <span>{label}</span>}
       </Link>
     </Button>
   );

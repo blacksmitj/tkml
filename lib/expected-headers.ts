@@ -50,7 +50,7 @@ export const expectedHeaders = [
   "deskripsi_usaha",
   "produk_utama",
   "tipe_lokasi",
-  "status_lokas",
+  "status_lokasi",
   "alamat_usaha",
 
   "provinsi_usaha",
@@ -100,6 +100,7 @@ export const expectedHeaders = [
   "lpj_berita_acara_serah_terima_penyelesaian_pekerjaan",
   "link_recap_laporan_keuangan_pdf",
   "link_recap_laporan_teknis_pdf",
+  "total_nonimal_belanja",
   "bukti_lpj_bantuan_sebelumnya",
   "bukti_surat_kelompok_sebelumnya",
   "link_keterangan_afirmasi",
