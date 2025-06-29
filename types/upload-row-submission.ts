@@ -95,6 +95,8 @@ export type UploadRowSubmission = {
   lpj_berita_acara_serah_terima_penyelesaian_pekerjaan: string;
   link_recap_laporan_keuangan_pdf: string;
   link_recap_laporan_teknis_pdf: string;
+  total_nonimal_belanja: string;
+
   bukti_lpj_bantuan_sebelumnya: string;
   bukti_surat_kelompok_sebelumnya: string;
   link_keterangan_afirmasi: string;

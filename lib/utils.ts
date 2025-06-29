@@ -1,4 +1,15 @@
+import { FormattedApplicant } from "@/types/applicants";
+import { FullSubmission } from "@/types/full-submission";
 import { clsx, type ClassValue } from "clsx";
+import { IconType } from "react-icons";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaTiktok,
+  FaTwitter,
+  FaUser,
+} from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -57,3 +68,70 @@ export const chunkArray = <T>(arr: T[], size: number): T[][] => {
     arr.slice(i * size, i * size + size)
   );
 };
+
+export const isPDF = (url: string | null) =>
+  url && url.toLowerCase().endsWith(".pdf");
+
+export function formatSubmission(
+  submission: FullSubmission
+): FormattedApplicant {
+  return {
+    id: submission.applicant.id,
+    name: submission.applicant.name,
+    selfieFile: submission.applicant.selfieFile || "",
+    currentJob: submission.applicant.currentJob || "-",
+    age: getAge(submission.applicant.birthDate)?.toString() ?? "-",
+    gender: submission.applicant.gender ? "Pria" : "Wanita",
+    ktpNumber: submission.applicant.ktpNumber,
+    domicileCity: submission.applicant.domicileCity || "-",
+    domicileProvince: submission.applicant.domicileProvince || "-",
+
+    businessName: submission.business?.name || "-",
+    businessSector: submission.business?.sector || "-",
+  };
+}
+
+export const valueFormat = (url: string | number | null) =>
+  url && typeof url === "string"
+    ? url.toLocaleLowerCase()
+    : typeof url === "number"
+    ? url.toString()
+    : "-";
+
+export function getSocialIcon(platform: string): IconType {
+  switch (platform.toLowerCase()) {
+    case "facebook":
+      return FaFacebook;
+    case "instagram":
+      return FaInstagram;
+    case "twitter":
+      return FaTwitter;
+    case "linkedin":
+      return FaLinkedin;
+    case "tiktok":
+      return FaTiktok;
+    default:
+      return FaUser;
+  }
+}
+
+export function formatPhoneNumber(phone: string | null): string {
+  if (!phone) {
+    return "";
+  }
+  // Hapus semua karakter non-angka
+  const digitsOnly = phone.replace(/\D/g, "");
+
+  if (digitsOnly.startsWith("0")) {
+    // Ganti 0 di depan dengan 62
+    return "62" + digitsOnly.slice(1);
+  }
+
+  if (digitsOnly.startsWith("8")) {
+    // Tambahkan 62 di depan
+    return "62" + digitsOnly;
+  }
+
+  // Jika sudah dimulai dengan 62, kembalikan seperti biasa
+  return digitsOnly;
+}

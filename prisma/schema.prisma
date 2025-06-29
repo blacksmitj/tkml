@@ -225,7 +225,7 @@ model Document {
   signer       String?
   location     String?
   comment      String?
-  varification Boolean?  @default(false)
+  verification Boolean?  @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt

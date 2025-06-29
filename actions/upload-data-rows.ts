@@ -5,10 +5,10 @@ import { getApplicantRole } from "@/lib/get-applicante-role";
 import { getBirthDate } from "@/lib/get-birthdate";
 import { parseDisability } from "@/lib/parse-disability";
 import { isMale, parseDate } from "@/lib/utils";
-import { ApplicantUploadRow } from "@/types/upload-row-submission";
+import { UploadRowSubmission } from "@/types/upload-row-submission";
 
 export const uploadDataRows = async (
-  rows: ApplicantUploadRow[],
+  rows: UploadRowSubmission[],
   programId: string
 ) => {
   try {

@@ -5,10 +5,10 @@ import { getApplicantRole } from "@/lib/get-applicante-role";
 import { getBirthDate } from "@/lib/get-birthdate";
 import { parseDisability } from "@/lib/parse-disability";
 import { parseDate, isMale, chunkArray } from "@/lib/utils";
-import { ApplicantUploadRow } from "@/types/upload-row-submission";
+import { UploadRowSubmission } from "@/types/upload-row-submission";
 
 export const uploadDataMany = async (
-  rows: ApplicantUploadRow[],
+  rows: UploadRowSubmission[],
   programId: string
 ) => {
   try {
@@ -115,7 +115,7 @@ export const uploadDataMany = async (
 };
 
 // Modular function: build data untuk applicant
-function buildApplicantData(row: ApplicantUploadRow) {
+function buildApplicantData(row: UploadRowSubmission) {
   return {
     idTkm: row.id_tkm,
     name: row.nama,
@@ -169,7 +169,7 @@ function buildApplicantData(row: ApplicantUploadRow) {
 
 // Modular function: build data untuk submission
 function buildSubmissionData(
-  row: ApplicantUploadRow,
+  row: UploadRowSubmission,
   applicantId: string,
   programId: string
 ) {
@@ -237,7 +237,7 @@ function buildSubmissionData(
         {
           fileUrl: row.link_recap_laporan_teknis_pdf,
           name: "Recap Laporan Teknis",
-          description: `Total nonimal belanja: {row.total_nonimal_belanja}`,
+          description: `Total nonimal belanja: ${row.total_nonimal_belanja}`,
         },
         {
           fileUrl: row.bukti_lpj_bantuan_sebelumnya,

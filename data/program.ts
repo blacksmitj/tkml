@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 
 export const getAllPrograms = async () => {
   try {
-    const programs = db.program.findMany();
+    const programs = await db.program.findMany();
 
     return programs;
   } catch (error) {

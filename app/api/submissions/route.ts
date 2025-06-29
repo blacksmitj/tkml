@@ -133,7 +133,7 @@ export async function GET(req: Request) {
         ktpNumber: submission.applicant.ktpNumber,
         domicileCity: submission.applicant.domicileCity,
         domicileProvince: submission.applicant.domicileProvince,
-        businesName: submission.business?.name,
+        businessName: submission.business?.name,
         businessSector: submission.business?.sector,
       })),
       nextCursor: hasNextPage ? submissions[LIMIT].id : null,
