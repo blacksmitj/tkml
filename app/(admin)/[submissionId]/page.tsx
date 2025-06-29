@@ -1,16 +1,16 @@
 import { getSubmissionById } from "@/data/submissions";
 import { SubmissionClient } from "./components/client";
 import { redirect } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Props {
   params: {
     submissionId: string;
-    programId: string;
   };
 }
 
 const SubmissionPage = async ({ params }: Props) => {
-  const { submissionId, programId } = await params;
+  const { submissionId } = await params;
 
   if (!submissionId) {
     redirect("/programs");
@@ -18,11 +18,8 @@ const SubmissionPage = async ({ params }: Props) => {
 
   const submission = await getSubmissionById(submissionId);
 
-  if (!programId) {
-    redirect("/programs");
-  }
   if (!submission) {
-    redirect(`/programs/${programId}`);
+    redirect(`/programs`);
   }
 
   return <SubmissionClient submission={submission} />;

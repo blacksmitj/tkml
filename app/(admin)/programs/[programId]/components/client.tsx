@@ -10,6 +10,10 @@ import { ButtonUpload } from "./button-upload";
 import { FilterDrawer } from "./filter-drawer";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
+import CircleChart from "@/components/circle-chart";
+import { InfoChart } from "@/components/info-chart";
+import { MdLibraryAddCheck } from "react-icons/md";
+import { RiFolderWarningFill } from "react-icons/ri";
 
 interface Props {
   program: {
@@ -89,44 +93,65 @@ export const SubmissionsClient = ({ program }: Props) => {
         initialCity={filters.city}
       />
 
-      <Header
-        program={program}
-        action={<ButtonUpload programId={program.id} />}
-        filters={
-          <div className="flex gap-4">
-            <Input
-              placeholder="Cari nama, nomor KTP, nama bisnis, atau sektor bisnis"
-              value={filters.search}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, search: e.target.value }))
-              }
-              className="w-[400px]"
-            />
-            <Button variant="outline" onClick={() => setOpen(true)}>
-              Filter
-            </Button>
-          </div>
-        }
-      />
-      <div className="flex flex-col gap-4 pt-[200px] p-8">
-        {data?.pages.flatMap((page) =>
-          page.data.map((submission: FormattedApplicant) => (
-            <Card
-              programId={program.id}
-              submission={submission}
-              key={submission.id}
-            />
-          ))
-        )}
+      <div className="flex">
+        <div className="flex-1 xl:pr-[350px]">
+          <Header
+            program={program}
+            action={<ButtonUpload programId={program.id} />}
+            filters={
+              <div className="flex gap-4">
+                <Input
+                  placeholder="Search..."
+                  value={filters.search}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, search: e.target.value }))
+                  }
+                  className="w-[400px]"
+                />
+                <Button variant="outline" onClick={() => setOpen(true)}>
+                  Filter
+                </Button>
+              </div>
+            }
+          />
+          <div className="flex flex-col gap-6 p-12">
+            {data?.pages.flatMap((page) =>
+              page.data.map((submission: FormattedApplicant) => (
+                <Card
+                  programId={program.id}
+                  submission={submission}
+                  key={submission.id}
+                />
+              ))
+            )}
 
-        {isLoading && <p>Loading...</p>}
-        <div ref={ref} />
-        {isFetchingNextPage && <p>Loading more...</p>}
-        {!hasNextPage && !isLoading && (
-          <p className="text-sm text-center text-muted-foreground">
-            Semua data telah dimuat
-          </p>
-        )}
+            {isLoading && <p>Loading...</p>}
+            <div ref={ref} />
+            {isFetchingNextPage && <p>Loading more...</p>}
+            {!hasNextPage && !isLoading && (
+              <p className="text-sm text-center text-muted-foreground">
+                Semua data telah dimuat
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Data */}
+        <div className="hidden w-[350px] fixed right-0 top-0 py-12 pr-12 gap-y-8 xl:flex flex-col">
+          <CircleChart total={400} value={314} />
+          <InfoChart
+            label="Lolos Seleksi"
+            number={164}
+            variant="success"
+            icon={MdLibraryAddCheck}
+          />
+          <InfoChart
+            label="Peserta Gagal"
+            number={51}
+            variant="danger"
+            icon={RiFolderWarningFill}
+          />
+        </div>
       </div>
     </>
   );

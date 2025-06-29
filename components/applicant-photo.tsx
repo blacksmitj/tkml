@@ -1,7 +1,5 @@
 import { isPDF } from "@/lib/utils";
-import { Applicant } from "@prisma/client";
 import Image from "next/image";
-import React from "react";
 
 interface Props {
   selfie: string | null;
@@ -15,7 +13,7 @@ const ApplicantPhoto = ({ selfie, name }: Props) => {
     return (
       <iframe
         src={selfie ? selfie : ""}
-        className="w-32 h-32 rounded-md border overflow-hidden"
+        className="w-32 h-32 rounded-full border overflow-hidden"
         title={`Dokumen ${name}`}
         style={{ border: "none" }}
       />
@@ -28,7 +26,7 @@ const ApplicantPhoto = ({ selfie, name }: Props) => {
       src={selfie ? selfie : ""}
       fill
       sizes="100"
-      className="rounded-md object-cover"
+      className="rounded-full object-cover"
       priority
     />
   );

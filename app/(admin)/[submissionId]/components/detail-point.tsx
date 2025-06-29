@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 import { IconType } from "react-icons";
 
 type Props = {
-  icon: IconType;
+  icon?: IconType;
   title: string;
   description?: string | null;
   alterDescription?: string;
@@ -26,7 +26,7 @@ export const DetailPoint = ({
   return (
     <div className="flex flex-col gap-1 items-start text-sm text-muted-foreground">
       <div className="flex gap-2 items-center">
-        <Icon className="w-4 h-4" />
+        {Icon && <Icon className="w-4 h-4" />}
         <h4 className="font-bold capitalize">{valueFormat(title)}</h4>
         {status && status === "-" && (
           <Badge variant={"secondary"}>Unverified</Badge>

@@ -9,13 +9,13 @@ type Props = {
   business: Business | null;
 };
 
-const SubmissionBusiness = ({ business }: Props) => {
+const business = ({ business }: Props) => {
   if (!business) {
     return;
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <HeaderPoint
         icon={BoxIcon}
         title={business?.name}
@@ -24,16 +24,8 @@ const SubmissionBusiness = ({ business }: Props) => {
       {/* Deskripsi */}
       <p>{capitalizeFirstLetter(business?.description)}</p>
 
-      <div className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))]">
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground capitalize">
-          <Item title="Alamat" value={business.address} />
-          <Item title="Provinsi" value={business.province} />
-          <Item title="Kota/Kabupaten" value={business.city} />
-          <Item title="Kelurahan" value={business.district} />
-          <Item title="Kecamatan" value={business.village} />
-          <Item title="Kode Pos" value={business.postalCode} />
-        </ul>
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground capitalize">
+      <div className="grid gap-10 grid-cols-[repeat(auto-fit,_minmax(200px,_1fr))]">
+        <ul className="flex flex-col gap-4 text-sm text-muted-foreground capitalize border-l pl-4 h-fit">
           <Item title="NIB" value={business.nib} />
           <Item title="Sector" value={business.sector} />
           <Item title="Business Type" value={business.businessType} />
@@ -42,17 +34,17 @@ const SubmissionBusiness = ({ business }: Props) => {
           <Item title="Ownership Status" value={business.ownershipStatus} />
         </ul>
 
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground capitalize">
+        <ul className="flex flex-col gap-4 text-sm text-muted-foreground capitalize border-l pl-4 h-fit">
           <Item title="Marketing Area" value={business.marketingArea} />
           <Item title="Marketing Chanel" value={business.marketingChannel} />
           <Item title="Marketing Country" value={business.marketingCountry} />
         </ul>
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground capitalize">
+        <ul className="flex flex-col gap-4 text-sm text-muted-foreground capitalize border-l pl-4 h-fit">
           <Item title="Partner" value={business.partnerDescription} />
           <Item title="Partner Count" value={business.partnerCount} />
         </ul>
 
-        <ul className="flex flex-col gap-1 text-sm text-muted-foreground capitalize">
+        <ul className="flex flex-col gap-4 text-sm text-muted-foreground capitalize border-l pl-4 h-fit">
           <Item title="Omzet Perbulan" value={business.omzetPerMonth} />
           <Item title="Profit Perbulan" value={business.profitPerMonth} />
           <Item
@@ -65,4 +57,4 @@ const SubmissionBusiness = ({ business }: Props) => {
   );
 };
 
-export default SubmissionBusiness;
+export default business;

@@ -18,7 +18,7 @@ import { useState } from "react";
 interface Props {
   title?: string;
   description?: string;
-  fileUrl: string | null;
+  fileUrl?: string | null;
   open: boolean;
   onClose: () => void;
 }
@@ -30,6 +30,10 @@ export function FileModal({
   open,
   onClose,
 }: Props) {
+  if (!fileUrl) {
+    return null;
+  }
+
   const [origin, setOrigin] = useState("center center");
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -42,7 +46,7 @@ export function FileModal({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-full sm:max-w-[50vw]">
+      <DialogContent className="sm:max-w-[50vw]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description && description}</DialogDescription>
@@ -53,11 +57,19 @@ export function FileModal({
             onMouseMove={handleMouseMove}
           >
             {isPDF(fileUrl) ? (
-              <PDFViewer fileUrl={fileUrl} />
+              <iframe
+                src={fileUrl}
+                title={title}
+                width="100%"
+                height="100%"
+                style={{
+                  transformOrigin: origin,
+                }}
+              />
             ) : (
               <Image
                 alt={`Dokumen ${title}`}
-                src={fileUrl ? fileUrl : ""}
+                src={fileUrl}
                 fill
                 style={{
                   transformOrigin: origin,

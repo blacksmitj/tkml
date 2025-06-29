@@ -21,7 +21,7 @@ export default function PDFViewer({ fileUrl }: Props) {
   return (
     <div className="flex flex-col items-center">
       <Document
-        file={fileUrl} // PDF di folder /public
+        file={`/api/pdf?url=${encodeURIComponent(fileUrl!)}`}
         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
       >
         {Array.from(new Array(numPages), (el, index) => (
